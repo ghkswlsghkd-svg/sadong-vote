@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>사동초 간식 투표 - 긴급 연동 수정</title>
+    <title>사동초 간식 투표 - 연동 완벽 해결</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -24,7 +24,6 @@
     <div class="main-wrapper">
         <div class="title-bar">사동초 간식 투표</div>
         <div class="container">
-            <!-- 🔴 기존 가치 투표(v1~v4)와 안 겹치게 간식 ID를 'f1'~'f12' (Food)로 전면 교체 -->
             <div class="option box1" onclick="vote('f1', 1)"><h1>흑임자핫도그</h1><div class="count" id="f1">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f1', -1)">수정</button></div>
             <div class="option box2" onclick="vote('f2', 1)"><h1>인절미토스트</h1><div class="count" id="f2">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f2', -1)">수정</button></div>
             <div class="option box3" onclick="vote('f3', 1)"><h1>닭꼬치구이</h1><div class="count" id="f3">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f3', -1)">수정</button></div>
@@ -46,9 +45,15 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
-        // 🔴 이미 권한이 뚫려있는 원래 서랍인 'votes'를 사용합니다.
         db.ref('votes').on('value', (snapshot) => {
             const data = snapshot.val() || {};
+            
+            // 🔴 만약 파이어베이스에 급식 데이터(f1~f12) 서랍이 없으면 자동으로 0점짜리 방을 만듭니다.
+            if (!data.f1 && data.f1 !== 0) {
+                db.ref('votes').update({ f1:0, f2:0, f3:0, f4:0, f5:0, f6:0, f7:0, f8:0, f9:0, f10:0, f11:0, f12:0 });
+                return;
+            }
+
             document.getElementById('f1').innerText = data.f1 || 0;
             document.getElementById('f2').innerText = data.f2 || 0;
             document.getElementById('f3').innerText = data.f3 || 0;
@@ -66,8 +71,8 @@
         function vote(menuId, val) {
             const ref = db.ref('votes/' + menuId);
             ref.transaction((current) => {
-                const newValue = (current || 0) + val;
-                return newValue < 0 ? 0 : newValue;
+                // 값이 비어있으면 0으로 시작하게 보완
+                return (current || 0) + val < 0 ? 0 : (current || 0) + val;
             });
         }
         
