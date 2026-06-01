@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>사동초 간식 투표 - 연동 완벽 해결</title>
+    <title>사동초 간식 투표 - 안전 복구 버전</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -45,40 +45,31 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
-        db.ref('votes').on('value', (snapshot) => {
-            const data = snapshot.val() || {};
-            
-            // 🔴 만약 파이어베이스에 급식 데이터(f1~f12) 서랍이 없으면 자동으로 0점짜리 방을 만듭니다.
-            if (!data.f1 && data.f1 !== 0) {
-                db.ref('votes').update({ f1:0, f2:0, f3:0, f4:0, f5:0, f6:0, f7:0, f8:0, f9:0, f10:0, f11:0, f12:0 });
-                return;
-            }
+        let localVotes = { f1:0, f2:0, f3:0, f4:0, f5:0, f6:0, f7:0, f8:0, f9:0, f10:0, f11:0, f12:0 };
 
-            document.getElementById('f1').innerText = data.f1 || 0;
-            document.getElementById('f2').innerText = data.f2 || 0;
-            document.getElementById('f3').innerText = data.f3 || 0;
-            document.getElementById('f4').innerText = data.f4 || 0;
-            document.getElementById('f5').innerText = data.f5 || 0;
-            document.getElementById('f6').innerText = data.f6 || 0;
-            document.getElementById('f7').innerText = data.f7 || 0;
-            document.getElementById('f8').innerText = data.f8 || 0;
-            document.getElementById('f9').innerText = data.f9 || 0;
-            document.getElementById('f10').innerText = data.f10 || 0;
-            document.getElementById('f11').innerText = data.f11 || 0;
-            document.getElementById('f12').innerText = data.f12 || 0;
+        db.ref('lunchData').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                localVotes = data;
+                for (let key in localVotes) {
+                    if (document.getElementById(key)) {
+                        document.getElementById(key).innerText = localVotes[key];
+                    }
+                }
+            } else {
+                db.ref('lunchData').set(localVotes);
+            }
         });
         
         function vote(menuId, val) {
-            const ref = db.ref('votes/' + menuId);
-            ref.transaction((current) => {
-                // 값이 비어있으면 0으로 시작하게 보완
-                return (current || 0) + val < 0 ? 0 : (current || 0) + val;
-            });
+            let nextVal = localVotes[menuId] + val;
+            if (nextVal < 0) nextVal = 0;
+            db.ref('lunchData/' + menuId).set(nextVal);
         }
         
         function resetAll() { 
             if(confirm("급식 투표 데이터를 초기화하시겠습니까?")) { 
-                db.ref('votes').update({ f1:0, f2:0, f3:0, f4:0, f5:0, f6:0, f7:0, f8:0, f9:0, f10:0, f11:0, f12:0 }); 
+                db.ref('lunchData').set({ f1:0, f2:0, f3:0, f4:0, f5:0, f6:0, f7:0, f8:0, f9:0, f10:0, f11:0, f12:0 }); 
             } 
         }
     </script>
