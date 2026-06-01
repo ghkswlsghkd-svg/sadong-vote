@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>사동초 학생 희망 간식 투표 - 완벽 압축</title>
+    <title>사동초 간식 투표 - 완벽 연동</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -11,13 +11,13 @@
     <style>
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: #000; overflow: hidden; /* 스크롤 절대 방지 */
+            background-color: #000; overflow: hidden; 
             font-family: 'Malgun Gothic', sans-serif;
         }
         
         .main-wrapper { 
             display: flex; flex-direction: column; 
-            width: 100%; height: 100vh; /* 무조건 모니터 화면 전체 높이에 고정 */
+            width: 100%; height: 100vh; 
             box-sizing: border-box;
         }
         
@@ -29,9 +29,9 @@
 
         .container { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* 무조건 3열 */
-            grid-template-rows: repeat(4, 1fr); /* 무조건 4행 */
-            height: 92vh; /* 타이틀 빼고 남은 높이 전체 차지 */
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: repeat(4, 1fr); 
+            height: 92vh; 
             padding: 5px;
             box-sizing: border-box;
             gap: 5px; 
@@ -44,12 +44,11 @@
             cursor: pointer;
             border-radius: 6px;
             padding: 5px;
-            overflow: hidden; /* 칸 밖으로 나가는 것 방지 */
+            overflow: hidden; 
         }
         
-        /* 🎨 배경색 */
         .box1 { background-color: #E74C3C; }
-        .box2 { background-color: #F1C40F; color: #000; } /* 인절미토스트 가독성 */
+        .box2 { background-color: #F1C40F; color: #000; } 
         .box3 { background-color: #27AE60; }
         .box4 { background-color: #2980B9; }
         .box5 { background-color: #8E44AD; }
@@ -61,7 +60,6 @@
         .box11 { background-color: #3498DB; }
         .box12 { background-color: #1ABC9C; }
 
-        /* 🔴 글자 크기 대폭 압축 */
         h1 { 
             font-size: 2.2rem; 
             margin: 0; 
@@ -73,7 +71,6 @@
             line-height: 1.2;
         }
         
-        /* 🔴 숫자 크기 압축 */
         .count { 
             font-size: 2.8rem; 
             font-weight: bold; 
@@ -94,7 +91,6 @@
 
         .reset-all { position: fixed; top: 10px; right: 10px; opacity: 0.1; background: black; color: white; border: none; font-size: 12px; cursor: pointer; }
 
-        /* 모바일용 비율 조정 */
         @media (max-width: 768px) {
             .title-bar { font-size: 1.6rem; height: 7vh; }
             .container { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(6, 1fr); height: 93vh; }
@@ -105,7 +101,7 @@
 </head>
 <body>
     <div class="main-wrapper">
-        <div class="title-bar">사동초 학생 희망 간식 투표</div>
+        <div class="title-bar">사동초 간식 투표</div>
         <div class="container">
             <div class="option box1" onclick="vote('m1', 1)"><h1>흑임자핫도그</h1><div class="count" id="m1">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m1', -1)">수정</button></div>
             <div class="option box2" onclick="vote('m2', 1)"><h1>인절미토스트</h1><div class="count" id="m2">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m2', -1)">수정</button></div>
@@ -124,12 +120,12 @@
     <button class="reset-all" onclick="resetAll()">R</button>
 
     <script>
-        // 파이어베이스 설정 유지
         const firebaseConfig = { databaseURL: "https://sadong-worth-vote-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
-        db.ref('votes').on('value', (snapshot) => {
+        // 🔴 데이터가 저장되는 경로를 'votes'에서 'lunchVotes'로 전면 분리했습니다.
+        db.ref('lunchVotes').on('value', (snapshot) => {
             const data = snapshot.val() || { m1:0, m2:0, m3:0, m4:0, m5:0, m6:0, m7:0, m8:0, m9:0, m10:0, m11:0, m12:0 };
             document.getElementById('m1').innerText = data.m1;
             document.getElementById('m2').innerText = data.m2;
@@ -146,7 +142,7 @@
         });
         
         function vote(menuId, val) {
-            const ref = db.ref('votes/' + menuId);
+            const ref = db.ref('lunchVotes/' + menuId);
             ref.transaction((current) => {
                 const newValue = (current || 0) + val;
                 return newValue < 0 ? 0 : newValue;
@@ -154,8 +150,8 @@
         }
         
         function resetAll() { 
-            if(confirm("데이터를 초기화하시겠습니까?")) { 
-                db.ref('votes').set({ m1:0, m2:0, m3:0, m4:0, m5:0, m6:0, m7:0, m8:0, m9:0, m10:0, m11:0, m12:0 }); 
+            if(confirm("급식 투표 데이터를 초기화하시겠습니까?")) { 
+                db.ref('lunchVotes').set({ m1:0, m2:0, m3:0, m4:0, m5:0, m6:0, m7:0, m8:0, m9:0, m10:0, m11:0, m12:0 }); 
             } 
         }
     </script>
