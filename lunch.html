@@ -3,118 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>사동초 간식 투표 - 완벽 연동</title>
-    <!-- Firebase SDK -->
+    <title>사동초 간식 투표 - 긴급 연동 수정</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
     <style>
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: #000; overflow: hidden; 
-            font-family: 'Malgun Gothic', sans-serif;
-        }
-        
-        .main-wrapper { 
-            display: flex; flex-direction: column; 
-            width: 100%; height: 100vh; 
-            box-sizing: border-box;
-        }
-        
-        .title-bar { 
-            height: 8vh; background-color: #000; color: white; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 2.2rem; font-weight: bold;
-        }
-
-        .container { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            grid-template-rows: repeat(4, 1fr); 
-            height: 92vh; 
-            padding: 5px;
-            box-sizing: border-box;
-            gap: 5px; 
-        }
-        
-        .option { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            color: white; border: 1px solid rgba(255,255,255,0.15); 
-            position: relative; box-sizing: border-box;
-            cursor: pointer;
-            border-radius: 6px;
-            padding: 5px;
-            overflow: hidden; 
-        }
-        
-        .box1 { background-color: #E74C3C; }
-        .box2 { background-color: #F1C40F; color: #000; } 
-        .box3 { background-color: #27AE60; }
-        .box4 { background-color: #2980B9; }
-        .box5 { background-color: #8E44AD; }
-        .box6 { background-color: #E67E22; }
-        .box7 { background-color: #D35400; }
-        .box8 { background-color: #F39C12; }
-        .box9 { background-color: #C0392B; }
-        .box10 { background-color: #2ECC71; }
-        .box11 { background-color: #3498DB; }
-        .box12 { background-color: #1ABC9C; }
-
-        h1 { 
-            font-size: 2.2rem; 
-            margin: 0; 
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4); 
-            text-align: center;
-            word-break: keep-all; 
-            pointer-events: none;
-            line-height: 1.2;
-        }
-        
-        .count { 
-            font-size: 2.8rem; 
-            font-weight: bold; 
-            margin-top: 4px; 
-            background: rgba(0,0,0,0.3); 
-            padding: 2px 25px; 
-            border-radius: 30px; 
-            pointer-events: none;
-            color: #fff !important;
-        }
-
-        .undo-btn {
-            position: absolute; bottom: 3px; right: 3px;
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.5); color: white; 
-            padding: 1px 5px; font-size: 0.7rem; border-radius: 4px; cursor: pointer;
-            z-index: 10;
-        }
-
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: 'Malgun Gothic', sans-serif; }
+        .main-wrapper { display: flex; flex-direction: column; width: 100%; height: 100vh; box-sizing: border-box; }
+        .title-bar { height: 8vh; background-color: #000; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; }
+        .container { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); height: 92vh; padding: 5px; box-sizing: border-box; gap: 5px; }
+        .option { display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; border: 1px solid rgba(255,255,255,0.15); position: relative; box-sizing: border-box; cursor: pointer; border-radius: 6px; padding: 5px; overflow: hidden; }
+        .box1 { background-color: #E74C3C; } .box2 { background-color: #F1C40F; color: #000; } .box3 { background-color: #27AE60; } .box4 { background-color: #2980B9; } .box5 { background-color: #8E44AD; } .box6 { background-color: #E67E22; } .box7 { background-color: #D35400; } .box8 { background-color: #F39C12; } .box9 { background-color: #C0392B; } .box10 { background-color: #2ECC71; } .box11 { background-color: #3498DB; } .box12 { background-color: #1ABC9C; }
+        h1 { font-size: 2.2rem; margin: 0; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); text-align: center; word-break: keep-all; pointer-events: none; line-height: 1.2; }
+        .count { font-size: 2.8rem; font-weight: bold; margin-top: 4px; background: rgba(0,0,0,0.3); padding: 2px 25px; border-radius: 30px; pointer-events: none; color: #fff !important; }
+        .undo-btn { position: absolute; bottom: 3px; right: 3px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.5); color: white; padding: 1px 5px; font-size: 0.7rem; border-radius: 4px; cursor: pointer; z-index: 10; }
         .reset-all { position: fixed; top: 10px; right: 10px; opacity: 0.1; background: black; color: white; border: none; font-size: 12px; cursor: pointer; }
-
-        @media (max-width: 768px) {
-            .title-bar { font-size: 1.6rem; height: 7vh; }
-            .container { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(6, 1fr); height: 93vh; }
-            h1 { font-size: 1.5rem; }
-            .count { font-size: 2rem; padding: 1px 15px; }
-        }
+        @media (max-width: 768px) { .title-bar { font-size: 1.6rem; height: 7vh; } .container { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(6, 1fr); height: 93vh; } h1 { font-size: 1.5rem; } .count { font-size: 2rem; padding: 1px 15px; } }
     </style>
 </head>
 <body>
     <div class="main-wrapper">
         <div class="title-bar">사동초 간식 투표</div>
         <div class="container">
-            <div class="option box1" onclick="vote('m1', 1)"><h1>흑임자핫도그</h1><div class="count" id="m1">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m1', -1)">수정</button></div>
-            <div class="option box2" onclick="vote('m2', 1)"><h1>인절미토스트</h1><div class="count" id="m2">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m2', -1)">수정</button></div>
-            <div class="option box3" onclick="vote('m3', 1)"><h1>닭꼬치구이</h1><div class="count" id="m3">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m3', -1)">수정</button></div>
-            <div class="option box4" onclick="vote('m4', 1)"><h1>떡볶이&<br>김말이튀김</h1><div class="count" id="m4">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m4', -1)">수정</button></div>
-            <div class="option box5" onclick="vote('m5', 1)"><h1>찹쌀꽈배기</h1><div class="count" id="m5">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m5', -1)">수정</button></div>
-            <div class="option box6" onclick="vote('m6', 1)"><h1>수원왕갈비통닭</h1><div class="count" id="m6">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m6', -1)">수정</button></div>
-            <div class="option box7" onclick="vote('m7', 1)"><h1>떡소꼬치</h1><div class="count" id="m7">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m7', -1)">수정</button></div>
-            <div class="option box8" onclick="vote('m8', 1)"><h1>프렌치토스트</h1><div class="count" id="m8">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m8', -1)">수정</button></div>
-            <div class="option box9" onclick="vote('m9', 1)"><h1>토마토소스<br>떡피자</h1><div class="count" id="m9">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m9', -1)">수정</button></div>
-            <div class="option box10" onclick="vote('m10', 1)"><h1>회오리감자</h1><div class="count" id="m10">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m10', -1)">수정</button></div>
-            <div class="option box11" onclick="vote('m11', 1)"><h1>베이컨떡말이</h1><div class="count" id="m11">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m11', -1)">수정</button></div>
-            <div class="option box12" onclick="vote('m12', 1)"><h1>만두탕수</h1><div class="count" id="m12">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('m12', -1)">수정</button></div>
+            <!-- 🔴 기존 가치 투표(v1~v4)와 안 겹치게 간식 ID를 'f1'~'f12' (Food)로 전면 교체 -->
+            <div class="option box1" onclick="vote('f1', 1)"><h1>흑임자핫도그</h1><div class="count" id="f1">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f1', -1)">수정</button></div>
+            <div class="option box2" onclick="vote('f2', 1)"><h1>인절미토스트</h1><div class="count" id="f2">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f2', -1)">수정</button></div>
+            <div class="option box3" onclick="vote('f3', 1)"><h1>닭꼬치구이</h1><div class="count" id="f3">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f3', -1)">수정</button></div>
+            <div class="option box4" onclick="vote('f4', 1)"><h1>떡볶이&<br>김말이튀김</h1><div class="count" id="f4">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f4', -1)">수정</button></div>
+            <div class="option box5" onclick="vote('f5', 1)"><h1>찹쌀꽈배기</h1><div class="count" id="f5">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f5', -1)">수정</button></div>
+            <div class="option box6" onclick="vote('f6', 1)"><h1>수원왕갈비통닭</h1><div class="count" id="f6">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f6', -1)">수정</button></div>
+            <div class="option box7" onclick="vote('f7', 1)"><h1>떡소꼬치</h1><div class="count" id="f7">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f7', -1)">수정</button></div>
+            <div class="option box8" onclick="vote('f8', 1)"><h1>프렌치토스트</h1><div class="count" id="f8">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f8', -1)">수정</button></div>
+            <div class="option box9" onclick="vote('f9', 1)"><h1>토마토소스<br>떡피자</h1><div class="count" id="f9">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f9', -1)">수정</button></div>
+            <div class="option box10" onclick="vote('f10', 1)"><h1>회오리감자</h1><div class="count" id="f10">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f10', -1)">수정</button></div>
+            <div class="option box11" onclick="vote('f11', 1)"><h1>베이컨떡말이</h1><div class="count" id="f11">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f11', -1)">수정</button></div>
+            <div class="option box12" onclick="vote('f12', 1)"><h1>만두탕수</h1><div class="count" id="f12">0</div><button class="undo-btn" onclick="event.stopPropagation(); vote('f12', -1)">수정</button></div>
         </div>
     </div>
     <button class="reset-all" onclick="resetAll()">R</button>
@@ -124,25 +46,25 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
-        // 🔴 데이터가 저장되는 경로를 'votes'에서 'lunchVotes'로 전면 분리했습니다.
-        db.ref('lunchVotes').on('value', (snapshot) => {
-            const data = snapshot.val() || { m1:0, m2:0, m3:0, m4:0, m5:0, m6:0, m7:0, m8:0, m9:0, m10:0, m11:0, m12:0 };
-            document.getElementById('m1').innerText = data.m1;
-            document.getElementById('m2').innerText = data.m2;
-            document.getElementById('m3').innerText = data.m3;
-            document.getElementById('m4').innerText = data.m4;
-            document.getElementById('m5').innerText = data.m5;
-            document.getElementById('m6').innerText = data.m6;
-            document.getElementById('m7').innerText = data.m7;
-            document.getElementById('m8').innerText = data.m8;
-            document.getElementById('m9').innerText = data.m9;
-            document.getElementById('m10').innerText = data.m10;
-            document.getElementById('m11').innerText = data.m11;
-            document.getElementById('m12').innerText = data.m12;
+        // 🔴 이미 권한이 뚫려있는 원래 서랍인 'votes'를 사용합니다.
+        db.ref('votes').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            document.getElementById('f1').innerText = data.f1 || 0;
+            document.getElementById('f2').innerText = data.f2 || 0;
+            document.getElementById('f3').innerText = data.f3 || 0;
+            document.getElementById('f4').innerText = data.f4 || 0;
+            document.getElementById('f5').innerText = data.f5 || 0;
+            document.getElementById('f6').innerText = data.f6 || 0;
+            document.getElementById('f7').innerText = data.f7 || 0;
+            document.getElementById('f8').innerText = data.f8 || 0;
+            document.getElementById('f9').innerText = data.f9 || 0;
+            document.getElementById('f10').innerText = data.f10 || 0;
+            document.getElementById('f11').innerText = data.f11 || 0;
+            document.getElementById('f12').innerText = data.f12 || 0;
         });
         
         function vote(menuId, val) {
-            const ref = db.ref('lunchVotes/' + menuId);
+            const ref = db.ref('votes/' + menuId);
             ref.transaction((current) => {
                 const newValue = (current || 0) + val;
                 return newValue < 0 ? 0 : newValue;
@@ -151,7 +73,7 @@
         
         function resetAll() { 
             if(confirm("급식 투표 데이터를 초기화하시겠습니까?")) { 
-                db.ref('lunchVotes').set({ m1:0, m2:0, m3:0, m4:0, m5:0, m6:0, m7:0, m8:0, m9:0, m10:0, m11:0, m12:0 }); 
+                db.ref('votes').update({ f1:0, f2:0, f3:0, f4:0, f5:0, f6:0, f7:0, f8:0, f9:0, f10:0, f11:0, f12:0 }); 
             } 
         }
     </script>
